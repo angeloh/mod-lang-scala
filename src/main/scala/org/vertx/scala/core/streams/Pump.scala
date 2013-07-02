@@ -16,23 +16,25 @@
 package org.vertx.scala.core.streams
 
 import org.vertx.java.core.buffer.Buffer
+import org.vertx.java.core.streams.{ ReadStream => JReadStream }
+import org.vertx.java.core.streams.{ WriteStream => JWriteStream }
 
 /**
  * @author swilliams
  *
  */
 object Pump {
-  def newPump(rs: ReadStream[Any], ws: WriteStream[Any]) = {
-    new Pump(rs, ws)
+  def newPump(readStream: ReadStream[JReadStream[Any]], writeStream: WriteStream[JWriteStream[Any]]) = {
+    new Pump(readStream, writeStream)
   }
-  def newPump(rs: ReadStream[Any], ws: WriteStream[Any], writeQueueMaxSize:Int) = {
-    def pump = new Pump(rs, ws)
+  def newPump(readStream: ReadStream[JReadStream[Any]], writeStream: WriteStream[JWriteStream[Any]], writeQueueMaxSize:Int) = {
+    def pump = new Pump(readStream, writeStream)
     pump.writeQueueMaxSize = writeQueueMaxSize
     pump
   }
 }
 
-class Pump(readStream: ReadStream[Any], writeStream: WriteStream[Any]) {
+class Pump(readStream: ReadStream[JReadStream[Any]], writeStream: WriteStream[JWriteStream[Any]]) {
 
   private var writeQueueMaxSize:Int = Int.MaxValue
 
@@ -51,12 +53,12 @@ class Pump(readStream: ReadStream[Any], writeStream: WriteStream[Any]) {
     }
   }
 
-  def start():Pump = {
+  def start():Pump.this.type = {
     readStream.dataHandler(dataHandler)
     this
   }
 
-  def stop():Pump = {
+  def stop():Pump.this.type = {
     writeStream.drainHandler(null)
     readStream.dataHandler(null)
     this

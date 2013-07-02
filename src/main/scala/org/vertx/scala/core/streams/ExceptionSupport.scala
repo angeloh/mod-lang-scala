@@ -16,21 +16,21 @@
 
 package org.vertx.scala.core.streams
 
-import org.vertx.java.core.streams.{ExceptionSupport => JExceptionSupport}
+import org.vertx.java.core.streams.{ ExceptionSupport => JExceptionSupport }
 import org.vertx.scala.core.Delegator
 import org.vertx.java.core.Handler
 
 /**
  * @author swilliams
  * @author Ranie Jade Ramiso
- * 
+ * @author Edgar Chan
  */
 trait ExceptionSupport[T <: JExceptionSupport[T]] { self: Delegator[T] =>
 
   import org.vertx.scala.core.FunctionConverters._
 
-  def exceptionHandler(handler: Throwable => Unit):ExceptionSupport.this.type = {
-    this.unwrap.exceptionHandler(handler)
+  def exceptionHandler(handler: Throwable => Unit): ExceptionSupport.this.type = {
+    internal.exceptionHandler(handler)
     this
   }
 

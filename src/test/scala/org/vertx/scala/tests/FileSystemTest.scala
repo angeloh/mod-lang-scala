@@ -23,7 +23,9 @@ import org.junit.{Before, Test}
 import java.nio.file.{FileSystems, Files}
 import java.io.File
 import org.vertx.scala.testframework.TestUtils
+import org.vertx.scala.core.file.AsyncFile
 import org.vertx.scala.core.streams.Pump
+import org.vertx.java.core.AsyncResult
 
 /**
  * @author Edgar Chan
@@ -132,10 +134,10 @@ class FileSystemTest extends TestVerticle {
         assertEquals(true, Option(ares1.cause).isEmpty)
         fs.open(to, ares2 => {
           assertEquals(true, Option(ares2.cause).isEmpty)
-          val rs = ares1.result
-          val ws = ares2.result
+          val rs: AsyncFile = ares1.result
+          val ws: AsyncFile = ares2.result
           val pump = Pump.newPump(rs, ws)
-          pump.start
+          pump.start().stop()
           rs.endHandler(() =>{
             ares1.result.close{ cr1 =>
               ares2.result.close{ cr2 =>

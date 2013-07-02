@@ -17,38 +17,35 @@ package org.vertx.scala.core.file
 
 import org.vertx.java.core.AsyncResult
 import org.vertx.java.core.buffer.Buffer
-import org.vertx.java.core.file.{AsyncFile => JAsyncFile}
+import org.vertx.java.core.file.{ AsyncFile => JAsyncFile }
 import org.vertx.scala.core.FunctionConverters._
-import org.vertx.scala.core.streams.{WriteStream, ReadStream}
+import org.vertx.scala.core.streams.{ WriteStream, ReadStream }
 import org.vertx.scala.core.Delegator
+import org.vertx.java.core.Handler
 
 /**
  * @author Edgar Chan
  * @author swilliams
  */
 object AsyncFile {
-  def apply(internal:JAsyncFile) = new AsyncFile(internal)
-  implicit def toScala(internal:JAsyncFile) = new AsyncFile(internal)
+  def apply(internal: JAsyncFile) = new AsyncFile(internal)
+  implicit def toScala(internal: JAsyncFile) = new AsyncFile(internal)
 }
 
-class AsyncFile[JAsyncFile](internal: JAsyncFile) extends Delegator[JAsyncFile](internal) with ReadStream[JAsyncFile] with WriteStream[JAsyncFile] { self: Delegator[JAsyncFile] =>
+class AsyncFile(internal: JAsyncFile) extends Delegator[JAsyncFile] with ReadStream[JAsyncFile] with WriteStream[JAsyncFile] {
 
-  // error
-  def close():Unit = internal.close()
+  def close(): Unit = internal.close()
 
-  // error
-  def close(handler: AsyncResult[Unit] => Unit):Unit = {
+  def close(handler: AsyncResult[Unit] => Unit): Unit = {
     internal.close(voidAsyncHandler(handler))
   }
 
-  // error
-  def write(data: Buffer, position: Int, handler: AsyncResult[Unit] => Unit ):AsyncFile.this.type = {
+  def write(data: Buffer, position: Int, handler: AsyncResult[Unit] => Unit): AsyncFile.this.type = {
     internal.write(data, position, voidAsyncHandler(handler))
     this
   }
 
-  // error
-  def read(buffer: Buffer, offset: Int, position: Int, length: Int, handler: AsyncResult[Buffer] => Unit):AsyncFile.this.type = {
+  def read(buffer: Buffer, offset: Int, position: Int, length: Int, handler: AsyncResult[Buffer] => Unit): AsyncFile.this.type = {
     internal.read(buffer, offset, position, length, new Handler[AsyncResult[Buffer]] {
       def handle(event: AsyncResult[Buffer]) {
         handler(event)
@@ -57,16 +54,14 @@ class AsyncFile[JAsyncFile](internal: JAsyncFile) extends Delegator[JAsyncFile](
     this
   }
 
-  // error
-  def flush():AsyncFile.this.type = {
+  def flush(): AsyncFile.this.type = {
     internal.flush()
     this
   }
 
-  // error
-  def flush(handler: AsyncResult[Unit] => Unit):AsyncFile.this.type = {
-   internal.flush(voidAsyncHandler(handler))
-   this
+  def flush(handler: AsyncResult[Unit] => Unit): AsyncFile.this.type = {
+    internal.flush(voidAsyncHandler(handler))
+    this
   }
 
 }

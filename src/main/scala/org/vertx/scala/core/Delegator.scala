@@ -18,7 +18,10 @@ package org.vertx.scala.core
 /**
  * @author swilliams
  * @author Ranie Jade Ramiso
+ * @author Edgar Chan
  */
-abstract class Delegator[T](private val internal: T) {
-  def unwrap: T = internal
+trait Delegator[T] {
+
+  protected def internal: T
+
 }
