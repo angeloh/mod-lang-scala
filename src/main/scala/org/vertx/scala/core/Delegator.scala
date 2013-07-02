@@ -20,8 +20,8 @@ package org.vertx.scala.core
  * @author Ranie Jade Ramiso
  * @author Edgar Chan
  */
-trait Delegator[T] {
+trait Delegator[I] {
 
-  protected def internal: T
+  protected def internal: I
 
 }

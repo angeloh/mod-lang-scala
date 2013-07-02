@@ -22,6 +22,7 @@ import org.vertx.scala.core.FunctionConverters._
 import org.vertx.scala.core.streams.{ WriteStream, ReadStream }
 import org.vertx.scala.core.Delegator
 import org.vertx.java.core.Handler
+import org.vertx.scala.core.streams.ExceptionSupport
 
 /**
  * @author Edgar Chan
@@ -32,7 +33,7 @@ object AsyncFile {
   implicit def toScala(internal: JAsyncFile) = new AsyncFile(internal)
 }
 
-class AsyncFile(internal: JAsyncFile) extends Delegator[JAsyncFile] with ReadStream[JAsyncFile] with WriteStream[JAsyncFile] {
+class AsyncFile(protected val internal: JAsyncFile) extends ReadStream[JAsyncFile] with WriteStream[JAsyncFile] { self: Delegator[JAsyncFile] =>
 
   def close(): Unit = internal.close()
 

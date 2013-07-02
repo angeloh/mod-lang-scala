@@ -47,5 +47,5 @@ trait WriteStream[I <: JWriteStream[Any]] extends ExceptionSupport[I] { self: De
 
   def writeQueueFull(): Boolean = internal.writeQueueFull
 
-  def unwrap(): I = this.internal
+  def unwrap(): JWriteStream[Any] = this.internal
 }

@@ -25,7 +25,7 @@ import org.vertx.java.core.Handler
  * @author Ranie Jade Ramiso
  * @author Edgar Chan
  */
-trait ExceptionSupport[T <: JExceptionSupport[T]] { self: Delegator[T] =>
+trait ExceptionSupport[I <: JExceptionSupport[Any]] extends Delegator[I] {
 
   import org.vertx.scala.core.FunctionConverters._
 
