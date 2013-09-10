@@ -19,12 +19,13 @@ package org.vertx.scala.tests
 import org.vertx.testtools.TestVerticle
 import org.junit.Test
 import org.vertx.testtools.VertxAssert._
+import org.vertx.java.core.buffer.Buffer
+import org.vertx.java.core.AsyncResult
+import org.vertx.scala.core._
+import org.vertx.scala.core.json._
+import org.vertx.java.platform.Verticle
 import org.vertx.scala.core.eventbus.{ Message, EventBus }
 import org.vertx.scala.testframework.TestUtils
-import org.vertx.java.core.buffer.Buffer
-import org.vertx.java.platform.Verticle
-import org.vertx.java.core.AsyncResult
-import org.vertx.scala.core.json._
 
 /**
  * @author Edgar Chan
@@ -79,6 +80,7 @@ class LocalTestVerticle extends Verticle with EventBusTestBase {
 
 class EventBusTest extends TestVerticle with EventBusTestBase {
 
+  lazy val sVertx: Vertx = Vertx(getVertx)
   lazy val eb = EventBus(vertx.eventBus)
 
   @Test
@@ -116,7 +118,7 @@ class EventBusTest extends TestVerticle with EventBusTestBase {
         assertEquals(SENT, msg.body)
         assertEquals(eb, eb.unregisterHandler(TEST_ADDRESS)(hdl))
         assertEquals(eb, eb.unregisterHandler(TEST_ADDRESS)(hdl))
-        vertx.timer(100)(t => {
+        sVertx.timer(100)(t => {
           testComplete()
         })
       }

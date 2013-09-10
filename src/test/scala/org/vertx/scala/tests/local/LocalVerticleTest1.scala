@@ -28,12 +28,16 @@ class LocalTestVerticle1 extends Verticle {
       testComplete()
     })
 
-  override def start() {
+  override def start(future: Future[Void]):Unit = {
+    start()
     vertx.eventBus.registerHandler("some-address")(hdl, rst => {
-      if (!rst.succeeded)
+      if (!rst.succeeded) {
+        future.setFailure(rst.cause())
         fail()
-      else
+      } else {
+        future.setResult(null)
         testComplete()
+      }
     })
   }
 
@@ -46,8 +50,8 @@ class LocalVerticleTest1 extends TestVerticle {
       container.deployVerticle(classOf[LocalTestVerticle1].getName,
         (ar: AsyncResult[String]) => {
           if (ar.succeeded) {
-           assertTrue(ar.succeeded)
-           testComplete()
+            assertTrue(ar.succeeded)
+            testComplete()
           } else {
             ar.cause.printStackTrace()
             fail()

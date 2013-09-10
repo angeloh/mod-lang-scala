@@ -48,8 +48,8 @@ class LocalVerticleTest3 extends TestVerticle {
       container.deployVerticle(classOf[LocalTestVerticle3].getName,
         (ar: AsyncResult[String]) => {
           if (ar.succeeded) {
-           assertTrue(ar.succeeded)
-           testComplete()
+            assertTrue(ar.succeeded)
+            testComplete()
           } else {
             ar.cause.printStackTrace()
             fail()
