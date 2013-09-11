@@ -15,8 +15,28 @@
  */
 apply from: "gradle/setup.gradle"
 apply from: "gradle/vertx.gradle"
+apply plugin: "ivy-publish"
 
 dependencies { }
+
+publishing {
+    publications {
+        ivy(IvyPublication) {
+            organisation "$modowner"
+            module "$modname"
+            revision "$version"
+            from components.java
+        }
+    }
+    /*generateDescriptorFileForIvyPublication {
+        destination = "${ivypath}/${modowner}/${modname}/${version}/ivys/ivy.xml"
+    }*/
+    repositories {
+        ivy {
+            url "$ivypath"
+        }
+    }
+}
 
 test {
   systemProperty 'vertx.test.timeout', 10
