@@ -17,28 +17,29 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def loadProperties(String sourceFileName) {
-  def config = new Properties()
-  def propFile = new File(sourceFileName)
-  if (propFile.canRead()) {
-    config.load(new FileInputStream(propFile))
-    for (Map.Entry property in config) {
-      project.ext[property.key] = property.value;
-    }
-  }
-}
-
-// We  have to explicitly load props from the user home dir - on CI we set
-// GRADLE_USER_HOME to a different dir to avoid problems with concurrent builds corrupting
-// a shared Maven local and using Gradle wrapper concurrently
-loadProperties("${System.getProperty('user.home')}/.gradle/gradle.properties")
-
-
 if (!hasProperty('sonatypeUsername')) {
   ext.sonatypeUsername = ''
 }
 if (!hasProperty('sonatypePassword')) {
   ext.sonatypePassword = ''
+}
+
+task sourceJar(type: Jar) {
+  description = 'Builds a source jar artifact suitable for maven deployment.'
+  classifier = 'sources'
+  from sourceSets.main.java
+}
+
+task javadocJar(type: Jar, dependsOn: ['javadoc']) {
+  description = 'Builds a javadoc jar artifact suitable for maven deployment.'
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+build.dependsOn sourceJar, javadocJar
+
+artifacts {
+  archives sourceJar, javadocJar
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,17 +58,19 @@ uploadArchives {
 
   repositories {
     mavenDeployer {
-      setUniqueVersion(false)
+      // setUniqueVersion(false)
 
       configuration = configurations.archives
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+      repository(url: "file:///Users/macbookpro/workspaces/repository/angeloh-bitbucket/releases")
+
+      /*repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
         authentication(userName: sonatypeUsername, password: sonatypePassword)
       }
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/"") {
         authentication(userName: sonatypeUsername, password: sonatypePassword)
-      }
+      }*/
 
       if (isReleaseVersion) {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -78,58 +81,3 @@ uploadArchives {
   }
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// configuration methods
-
-def configurePom(def pom) {
-  pom.project {
-    name rootProject.name
-    description 'Vert.x module that provides Scala support'
-    inceptionYear '2013'
-    packaging 'jar'
-    url 'http://vertx.io'
-
-    developers {
-      developer {
-        id 'swilliams-vmw'
-        name 'Stuart Williams'
-      }
-      developer {
-        id 'edgarchan'
-        name 'Edgar Chan'
-      }
-      developer {
-        id 'nfmelendez'
-        name 'Nicolas Melendez'
-      }
-      developer {
-        id 'Narigo'
-        name 'Joern Bernhardt'
-      }
-      developer {
-        id 'raniejade'
-        name 'Ranie Jade Ramiso'
-      }
-      developer {
-        id 'galderz'
-        name 'Galder Zamarreño'
-      }
-    }
-
-    scm {
-      url 'https://github.com/vert-x/mod-lang-scala'
-    }
-
-    licenses {
-      license {
-        name 'The Apache Software License, Version 2.0'
-        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-        distribution 'repo'
-      }
-    }
-
-    properties {
-      setProperty('project.build.sourceEncoding', 'UTF8')
-    }
-  }
-}
